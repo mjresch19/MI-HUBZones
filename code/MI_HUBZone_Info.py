@@ -71,6 +71,37 @@ for i in county_list:
 
 tac_df["Number of HUBZone Businesses"] = county_hubzone_list
 
+
+'''
+Analyze the Total Federal Compensation that each County received from HUBZone Contracts
+'''
+
+county_federal_compensation = {}
+
+#iterate through our HUBZone Businesses in Michigan to get HUBZone Count
+for index, row in michigan_HUBZone_info.iterrows():
+    for key, val in michigan_county_dictionary.items():
+        if row["recipient_city_name"] in val:
+            if key not in county_federal_compensation:
+                county_federal_compensation[key] = row["federal_action_obligation"]
+            else:
+                county_federal_compensation[key] += row["federal_action_obligation"]
+                
+
+county_federal_compensation = OrderedDict(sorted(county_federal_compensation.items()))
+
+federal_compensation_list = []
+
+#Fill null values with 0
+for i in county_list:
+    if i not in county_federal_compensation:
+        federal_compensation_list.append(0)
+    else:
+        federal_compensation_list.append(float(f"{county_federal_compensation[i]:.2f}"))
+
+tac_df["Federal Contract Compensation"] = federal_compensation_list
+
+
 '''
 Export dataframe to an Excel Sheet
 '''
