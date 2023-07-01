@@ -28,4 +28,17 @@ for index, row in michigan_df.iterrows():
     else:
         michigan_county_dictionary[row["county_name"]].append(row["city"].upper())
 
-print(michigan_county_dictionary)
+'''
+Create a list of all Michigan Counties & add to Dataframe
+'''
+
+county_list = []
+
+for key in michigan_county_dictionary.keys():
+    county_list.append(key)
+
+county_list.sort()
+
+tac_df["County Name"] = county_list
+
+print("Tst")
