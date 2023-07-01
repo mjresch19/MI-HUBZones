@@ -76,30 +76,43 @@ tac_df["Number of HUBZone Businesses"] = county_hubzone_list
 Analyze the Total Federal Compensation that each County received from HUBZone Contracts
 '''
 
-county_federal_compensation = {}
+#We will split up the federal compensation into years so we can perform cumulative calculations in Tableau later on
+for year in range(2008,2023):
 
-#iterate through our HUBZone Businesses in Michigan to get HUBZone Count
-for index, row in michigan_HUBZone_info.iterrows():
-    for key, val in michigan_county_dictionary.items():
-        if row["recipient_city_name"] in val:
-            if key not in county_federal_compensation:
-                county_federal_compensation[key] = row["federal_action_obligation"]
-            else:
-                county_federal_compensation[key] += row["federal_action_obligation"]
-                
+    county_federal_compensation = {}
 
-county_federal_compensation = OrderedDict(sorted(county_federal_compensation.items()))
+    #iterate through our HUBZone Businesses in Michigan to get HUBZone Count
+    for index, row in michigan_HUBZone_info.iterrows():
 
-federal_compensation_list = []
+        #skip to next iteration if the year is less than to current iteration
+        if row["award_year"] < year:
+            continue
 
-#Fill null values with 0
-for i in county_list:
-    if i not in county_federal_compensation:
-        federal_compensation_list.append(0)
-    else:
-        federal_compensation_list.append(float(f"{county_federal_compensation[i]:.2f}"))
+        #Go to next year if the year is greater than the current iteration
+        if row["award_year"] > year:
+            break        
 
-tac_df["Federal Contract Compensation"] = federal_compensation_list
+
+        for key, val in michigan_county_dictionary.items():
+            if row["recipient_city_name"] in val:
+                if key not in county_federal_compensation:
+                    county_federal_compensation[key] = row["federal_action_obligation"]
+                else:
+                    county_federal_compensation[key] += row["federal_action_obligation"]
+                    
+
+    county_federal_compensation = OrderedDict(sorted(county_federal_compensation.items()))
+
+    federal_compensation_list = []
+
+    #Fill null values with 0
+    for i in county_list:
+        if i not in county_federal_compensation:
+            federal_compensation_list.append(0)
+        else:
+            federal_compensation_list.append(float(f"{county_federal_compensation[i]:.2f}"))
+
+    tac_df[f"Federal Contract Compensation - {year}"] = federal_compensation_list
 
 
 '''
