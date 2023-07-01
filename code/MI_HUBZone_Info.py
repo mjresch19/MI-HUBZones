@@ -45,31 +45,44 @@ tac_df["County Name"] = county_list
 Analyzing Number of HUBZone Businesses from 2017-2021
 '''
 
-county_count_dict = {}
+#Separate number of HUBZone Businesses by Year so that way we can filter better on Tableau later on
+for year in range(2008,2023):
 
-#iterate through our HUBZone Businesses in Michigan to get HUBZone Count
-for index, row in michigan_HUBZone_info.iterrows():
-    for key, val in michigan_county_dictionary.items():
-        if row["recipient_city_name"] in val:
-            if key not in county_count_dict:
-                county_count_dict[key] = 1
-            else:
-                county_count_dict[key] += 1
+    county_count_dict = {}
+
+    #iterate through our HUBZone Businesses in Michigan to get HUBZone Count
+    for index, row in michigan_HUBZone_info.iterrows():
+
+        #skip to next iteration if the year is less than to current iteration
+        if row["award_year"] < year:
+            continue
+
+        #Go to next year if the year is greater than the current iteration
+        if row["award_year"] > year:
+            break        
 
 
-#Order the Dictionary alphabetically                
-county_count_dict = OrderedDict(sorted(county_count_dict.items()))
+        for key, val in michigan_county_dictionary.items():
+            if row["recipient_city_name"] in val:
+                if key not in county_count_dict:
+                    county_count_dict[key] = 1
+                else:
+                    county_count_dict[key] += 1
 
-county_hubzone_list = []
 
-#Fill null values with 0
-for i in county_list:
-    if i not in county_count_dict:
-        county_hubzone_list.append(0)
-    else:
-        county_hubzone_list.append(county_count_dict[i])
+    #Order the Dictionary alphabetically                
+    county_count_dict = OrderedDict(sorted(county_count_dict.items()))
 
-tac_df["Number of HUBZone Businesses"] = county_hubzone_list
+    county_hubzone_list = []
+
+    #Fill null values with 0
+    for i in county_list:
+        if i not in county_count_dict:
+            county_hubzone_list.append(0)
+        else:
+            county_hubzone_list.append(county_count_dict[i])
+
+    tac_df[f"Number of HUBZone Businesses - {year}"] = county_hubzone_list
 
 
 '''
