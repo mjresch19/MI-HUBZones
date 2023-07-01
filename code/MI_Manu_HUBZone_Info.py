@@ -61,6 +61,10 @@ for year in range(2008,2023):
         if row["award_year"] > year:
             break        
 
+        #skip if we are not looking at a manufacturer
+        if row["manufacturer_of_goods"] != "t":
+            continue
+
 
         for key, val in michigan_county_dictionary.items():
             if row["recipient_city_name"] in val:
@@ -105,6 +109,9 @@ for year in range(2008,2023):
         if row["award_year"] > year:
             break        
 
+        #skip if we are not looking at a manufacturer
+        if row["manufacturer_of_goods"] != "t":
+            continue
 
         for key, val in michigan_county_dictionary.items():
             if row["recipient_city_name"] in val:
