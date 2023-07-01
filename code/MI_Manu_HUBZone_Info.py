@@ -136,6 +136,54 @@ for year in range(2008,2023):
 
 
 '''
+Analyze Potential Employees residing in each HUBZone Business
+
+- For now utilzing minimum employees to show a fairer representation of how many employees a HUBZone Manu business can provide
+'''
+
+#Employee data omitted from 2018 and on
+for year in range(2008,2018):
+    
+    county_employment = {}
+    num_employments = {}
+
+    #iterate through our HUBZone Businesses in Michigan to get HUBZone Count
+    for index, row in michigan_HUBZone_info.iterrows():
+
+        #skip to next iteration if the year is less than to current iteration
+        if row["award_year"] < year:
+            continue
+
+        #Go to next year if the year is greater than the current iteration
+        if row["award_year"] > year:
+            break        
+
+        #skip if we are not looking at a manufacturer
+        if row["manufacturer_of_goods"] != "t":
+            continue
+
+        for key, val in michigan_county_dictionary.items():
+            if row["recipient_city_name"] in val:
+                if key not in county_employment:
+                    county_employment[key] = row["employees_min"]
+                else:
+                    county_employment[key] += row["employees_min"]
+                    
+
+    county_employment = OrderedDict(sorted(county_employment.items()))
+
+    county_employment_list = []
+
+    #Fill null values with 0
+    for i in county_list:
+        if i not in county_employment:
+            county_employment_list.append(0)
+        else:
+            county_employment_list.append(float(f"{county_employment[i]}"))
+
+    tac_df[f"Manufacturing Employees on Avg. - {year}"] = county_employment_list
+
+'''
 Export dataframe to an Excel Sheet
 '''
 
