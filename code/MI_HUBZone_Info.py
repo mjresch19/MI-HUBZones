@@ -41,4 +41,40 @@ county_list.sort()
 
 tac_df["County Name"] = county_list
 
-print("Tst")
+'''
+Analyzing Number of HUBZone Businesses from 2017-2021
+'''
+
+county_count_dict = {}
+
+#iterate through our HUBZone Businesses in Michigan to get HUBZone Count
+for index, row in michigan_HUBZone_info.iterrows():
+    for key, val in michigan_county_dictionary.items():
+        if row["recipient_city_name"] in val:
+            if key not in county_count_dict:
+                county_count_dict[key] = 1
+            else:
+                county_count_dict[key] += 1
+
+
+#Order the Dictionary alphabetically                
+county_count_dict = OrderedDict(sorted(county_count_dict.items()))
+
+county_hubzone_list = []
+
+#Fill null values with 0
+for i in county_list:
+    if i not in county_count_dict:
+        county_hubzone_list.append(0)
+    else:
+        county_hubzone_list.append(county_count_dict[i])
+
+tac_df["Number of HUBZone Businesses"] = county_hubzone_list
+
+'''
+Export dataframe to an Excel Sheet
+'''
+
+tac_df = tac_df.set_index('County Name')
+
+tac_df.to_excel("Michigan Dataset.xlsx")  
