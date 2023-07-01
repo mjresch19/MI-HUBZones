@@ -166,8 +166,10 @@ for year in range(2008,2018):
             if row["recipient_city_name"] in val:
                 if key not in county_employment:
                     county_employment[key] = row["employees_min"]
+                    num_employments[key] = 1
                 else:
                     county_employment[key] += row["employees_min"]
+                    num_employments[key] += 1
                     
 
     county_employment = OrderedDict(sorted(county_employment.items()))
@@ -179,7 +181,7 @@ for year in range(2008,2018):
         if i not in county_employment:
             county_employment_list.append(0)
         else:
-            county_employment_list.append(float(f"{county_employment[i]}"))
+            county_employment_list.append(float(f"{county_employment[i]}") / float(f"{num_employments[i]}"))
 
     tac_df[f"Manufacturing Employees on Avg. - {year}"] = county_employment_list
 
